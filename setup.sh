@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#                    _           _        _ _ 
+#                    _           _        _ _
 #  ___  _____  __   (_)_ __  ___| |_ __ _| | |
 # / _ \/ __\ \/ /   | | '_ \/ __| __/ _` | | |
 #| (_) \__ \>  <    | | | | \__ \ || (_| | | |
@@ -9,8 +9,7 @@
 
 echo "I  ❤️  🍎"
 echo "Mac OS Install Setup Script"
-echo "By Nina Zakharenko"
-echo "Follow me on twitter! https://twitter.com/nnja"
+echo "By Alex Kryklia, inspired by Nina Zakharenko"
 
 # Some configs reused from:
 # https://github.com/ruyadorno/installme-osx/
@@ -92,66 +91,68 @@ brew tap caskroom/cask
 
 
 #############################################
+#No need as files are transfered from old mac.
+
 ### Generate ssh keys & add to ssh-agent
 ### See: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
 #############################################
 
-echo "Generating ssh keys, adding to ssh-agent..."
-read -p 'Input email for ssh key: ' useremail
+# echo "Generating ssh keys, adding to ssh-agent..."
+# read -p 'Input email for ssh key: ' useremail
 
-echo "Use default ssh file location, enter a passphrase: "
-ssh-keygen -t rsa -b 4096 -C "$useremail"  # will prompt for password
-eval "$(ssh-agent -s)"
+# echo "Use default ssh file location, enter a passphrase: "
+# ssh-keygen -t rsa -b 4096 -C "$useremail"  # will prompt for password
+# eval "$(ssh-agent -s)"
 
-# Now that sshconfig is synced add key to ssh-agent and
-# store passphrase in keychain
-ssh-add -K ~/.ssh/id_rsa
+# # Now that sshconfig is synced add key to ssh-agent and
+# # store passphrase in keychain
+# ssh-add -K ~/.ssh/id_rsa
 
-# If you're using macOS Sierra 10.12.2 or later, you will need to modify your ~/.ssh/config file to automatically load keys into the ssh-agent and store passphrases in your keychain.
+# # If you're using macOS Sierra 10.12.2 or later, you will need to modify your ~/.ssh/config file to automatically load keys into the ssh-agent and store passphrases in your keychain.
 
-if [ -e ~/.ssh/config ]
-then
-    echo "ssh config already exists. Skipping adding osx specific settings... "
-else
-	echo "Writing osx specific settings to ssh config... "
-   cat <<EOT >> ~/.ssh/config
-	Host *
-		AddKeysToAgent yes
-		UseKeychain yes
-		IdentityFile ~/.ssh/id_rsa
-EOT
-fi
+# if [ -e ~/.ssh/config ]
+# then
+#     echo "ssh config already exists. Skipping adding osx specific settings... "
+# else
+# 	echo "Writing osx specific settings to ssh config... "
+#    cat <<EOT >> ~/.ssh/config
+# 	Host *
+# 		AddKeysToAgent yes
+# 		UseKeychain yes
+# 		IdentityFile ~/.ssh/id_rsa
+# EOT
+# fi
 
 #############################################
 ### Add ssh-key to GitHub via api
 #############################################
 
-echo "Adding ssh-key to GitHub (via api)..."
-echo "Important! For this step, use a github personal token with the admin:public_key permission."
-echo "If you don't have one, create it here: https://github.com/settings/tokens/new"
+# echo "Adding ssh-key to GitHub (via api)..."
+# echo "Important! For this step, use a github personal token with the admin:public_key permission."
+# echo "If you don't have one, create it here: https://github.com/settings/tokens/new"
 
-retries=3
-SSH_KEY=`cat ~/.ssh/id_rsa.pub`
+# retries=3
+# SSH_KEY=`cat ~/.ssh/id_rsa.pub`
 
-for ((i=0; i<retries; i++)); do
-      read -p 'GitHub username: ' ghusername
-      read -p 'Machine name: ' ghtitle
-      read -sp 'GitHub personal token: ' ghtoken
+# for ((i=0; i<retries; i++)); do
+#       read -p 'GitHub username: ' ghusername
+#       read -p 'Machine name: ' ghtitle
+#       read -sp 'GitHub personal token: ' ghtoken
 
-      gh_status_code=$(curl -o /dev/null -s -w "%{http_code}\n" -u "$ghusername:$ghtoken" -d '{"title":"'$ghtitle'","key":"'"$SSH_KEY"'"}' 'https://api.github.com/user/keys')
+#       gh_status_code=$(curl -o /dev/null -s -w "%{http_code}\n" -u "$ghusername:$ghtoken" -d '{"title":"'$ghtitle'","key":"'"$SSH_KEY"'"}' 'https://api.github.com/user/keys')
 
-      if (( $gh_status_code -eq == 201))
-      then
-          echo "GitHub ssh key added successfully!"
-          break
-      else
-			echo "Something went wrong. Enter your credentials and try again..."
-     		echo -n "Status code returned: "
-     		echo $gh_status_code
-      fi
-done
+#       if (( $gh_status_code -eq == 201))
+#       then
+#           echo "GitHub ssh key added successfully!"
+#           break
+#       else
+# 			echo "Something went wrong. Enter your credentials and try again..."
+#      		echo -n "Status code returned: "
+#      		echo $gh_status_code
+#       fi
+# done
 
-[[ $retries -eq i ]] && echo "Adding ssh-key to GitHub failed! Try again later."
+# [[ $retries -eq i ]] && echo "Adding ssh-key to GitHub failed! Try again later."
 
 
 ##############################
@@ -160,21 +161,9 @@ done
 
 echo "Starting brew app install..."
 
-### Window Management
-# Todo: Try Divvy and spectacles in the future
-brew cask install sizeup  # window manager
-
-# Start SizeUp at login
-defaults write com.irradiatedsoftware.SizeUp StartAtLogin -bool true
-
-# Don’t show the preferences window on next start
-defaults write com.irradiatedsoftware.SizeUp ShowPrefsOnNextStart -bool false
-
 
 ### Developer Tools
 brew cask install iterm2
-brew cask install dash
-brew install ispell
 
 
 ### Development
@@ -190,10 +179,12 @@ brew install wget
 brew install zsh # zshell
 brew install tmux
 brew install tree
+brew install legit
 brew link curl --force
 brew install grep --with-default-names
 brew install trash  # move to osx trash instead of rm
 brew install less
+brew install htop
 
 
 ### Python
@@ -201,53 +192,32 @@ brew install python
 brew install pyenv
 
 
-### Microcontrollers & Electronics
-brew install avrdude
-brew cask install arduino
-# Manually install teensyduino from:
-# https://www.pjrc.com/teensy/td_download.html
+### Window managers and neat stuff
+brew cask install hammerspoon
 
 
-### Dev Editors 
+### Dev Editors
 brew cask install visual-studio-code
-brew cask install pycharm
-### spacemacs github.com/syl20bnr/spacemacs
-git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
-brew tap d12frosted/emacs-plus
-brew install emacs-plus --HEAD --with-natural-title-bars
-brew linkapps emacs-plus
-
+brew cask install sublime-text
 
 ### Writing
-brew cask install evernote
-brew cask install macdown
-brew cask install notion
 
 
 ### Conferences, Blogging, Screencasts
-brew cask install deckset
-brew cask install ImageOptim  # for optimizing images
-brew cask install screenflow
+
 
 
 ### Productivity
-brew cask install wavebox
 brew cask install google-chrome
-brew cask install alfred
 brew cask install dropbox
+brew cask install firefox
 
 brew cask install timing  # time and project tracker
 brew cask install keycastr  # show key presses on screen (for gifs & screencasts)
-brew cask install betterzip
-brew cask install caffeine  # keep computer from sleeping
 brew cask install skitch  # app to annotate screenshots
-brew cask install muzzle
-brew cask install flux
 
 
 ### Keyboard & Mouse
-brew cask install karabiner-elements  # remap keys, emacs shortcuts
-brew cask install scroll-reverser  # allow natural scroll for trackpad, not for mouse
 
 
 ### Quicklook plugins https://github.com/sindresorhus/quick-look-plugins
@@ -261,13 +231,12 @@ brew cask install quicklook-csv  # preview csvs
 
 ### Chat / Video Conference
 brew cask install slack
-brew cask install microsoft-teams
-brew cask install zoomus
-brew cask install signal
+brew cask install telegram
+brew cask install viber
+brew cask install skype
 
 
 ### Music and Video
-brew cask install marshallofsound-google-play-music-player
 brew cask install vlc
 
 
@@ -284,8 +253,7 @@ echo "Installing fonts..."
 brew tap caskroom/fonts
 
 ### programming fonts
-brew cask install font-fira-mono-for-powerline
-brew cask install font-fira-code
+brew cask install font-inconsolata
 
 ### SourceCodePro + Powerline + Awesome Regular (for powerlevel 9k terminal icons)
 cd ~/Library/Fonts && { curl -O 'https://github.com/Falkor/dotfiles/blob/master/fonts/SourceCodePro+Powerline+Awesome+Regular.ttf?raw=true' ; cd -; }
@@ -315,6 +283,26 @@ then
 	mas install 668208984  # GIPHY Capture. The GIF Maker (For recording my screen as gif)
 	mas install 1351639930 # Gifski, convert videos to gifs
 	mas install 414030210  # Limechat, IRC app.
+
+
+    mas install 524983685 # Screen Utility (1.1)
+    mas install 412347921 # OmmWriter (1.55)
+    mas install 409183694 # Keynote (8.3)
+    mas install 571213070 # DaVinci Resolve (15.2.1)
+    mas install 682658836 # GarageBand (10.3.1)
+    mas install 490152466 # iBooks Author (2.6.1)
+    mas install 402592703 # Time Out (2.5)
+    mas install 422304217 # Day One Classic (1.10.6)
+    mas install 1035237815 # Commander One PRO (1.7.4)
+    mas install 880001334 # Reeder (3.2.1)
+    mas install 696977615 # Capo (3.6.2)
+    mas install 736189492 # Notability (3.1)
+    mas install 816042486 # Compare Folders (1.2.2)
+    mas install 572280828 # MacFamilyTree 7 (7.6.3)
+    mas install 1031826818 # DuplicateFilesCleaner (1.4.3)
+    mas install 410628904 # Wunderlist (3.4.9)
+    mas install 870659406 # Stache (1.2.1)
+    mas install 897118787 # Shazam (2.1)
 else
 	cecho "App Store login not complete. Skipping installing App Store Apps" $red
 fi
@@ -366,7 +354,7 @@ defaults write com.apple.dock autohide-delay -float 0
 # Automatically hide and show the Dock
 defaults write com.apple.dock autohide -bool true
 
-# Only Show Open Applications In The Dock  
+# Only Show Open Applications In The Dock
 defaults write com.apple.dock static-only -bool true
 
 # Display full POSIX path as Finder window title
@@ -396,7 +384,7 @@ defaults write com.apple.dock minimize-to-application -bool true
 defaults write com.apple.dock autohide -bool true
 
 # Don’t show recent applications in Dock
-#    defaults write com.apple.dock show-recents -bool false
+defaults write com.apple.dock show-recents -bool false
 
 # Menu bar: hide the Time Machine, User icons, but show the volume Icon.
 for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
@@ -407,7 +395,6 @@ done
 defaults write com.apple.systemuiserver menuExtras -array \
 	"/System/Library/CoreServices/Menu Extras/Volume.menu" \
 	"/System/Library/CoreServices/Menu Extras/Bluetooth.menu" \
-	"/System/Library/CoreServices/Menu Extras/AirPort.menu" \
 	"/System/Library/CoreServices/Menu Extras/Battery.menu" \
 	"/System/Library/CoreServices/Menu Extras/Clock.menu"
 
@@ -520,9 +507,9 @@ defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
 #############################################
 ### Install dotfiles repo, run link script
 #############################################
-# TODO: 
+# TODO:
 # clean up my personal repo to make it public
-# dotfiles for vs code, emacs, gitconfig, oh my zsh, etc. 
+# dotfiles for vs code, emacs, gitconfig, oh my zsh, etc.
 # git clone git@github.com:nnja/dotfiles.git
 # cd dotfiles
 # fetch submodules for oh-my-zsh
