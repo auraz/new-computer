@@ -192,33 +192,31 @@ brew install python
 brew install pyenv
 
 
-### Window managers and neat stuff
+### Tools
 brew cask install hammerspoon
-
-
-### Dev Editors
+brew cask install iterm2
+brew install gnupg
 brew cask install visual-studio-code
 brew cask install sublime-text
-
-### Writing
-
-
-### Conferences, Blogging, Screencasts
-
-
-
-### Productivity
 brew cask install google-chrome
 brew cask install dropbox
 brew cask install firefox
+brew cask install slack
+brew cask install telegram
+brew cask install viber
+brew cask install skype
+brew cask install vlc
+brew cask install the-unarchiver
+brew cask install google-drive
+brew cask install google-hangouts
+brew cask install audacity
+brew cask install omnifocus
+brew cask install numi
+brew cask install reeder
 
 brew cask install timing  # time and project tracker
 brew cask install keycastr  # show key presses on screen (for gifs & screencasts)
 brew cask install skitch  # app to annotate screenshots
-
-
-### Keyboard & Mouse
-
 
 ### Quicklook plugins https://github.com/sindresorhus/quick-look-plugins
 brew cask install qlcolorcode # syntax highlighting in preview
@@ -227,17 +225,6 @@ brew cask install qlmarkdown  # preview markdown files
 brew cask install quicklook-json  # preview json files
 brew cask install epubquicklook  # preview epubs, make nice icons
 brew cask install quicklook-csv  # preview csvs
-
-
-### Chat / Video Conference
-brew cask install slack
-brew cask install telegram
-brew cask install viber
-brew cask install skype
-
-
-### Music and Video
-brew cask install vlc
 
 
 ### Run Brew Cleanup
@@ -278,18 +265,10 @@ echo "Is app store login complete.(y/n)? "
 read response
 if [ "$response" != "${response#[Yy]}" ]
 then
-	mas install 907364780  # Tomato One - Pomodoro timer
-	mas install 485812721  # Tweetdeck
-	mas install 668208984  # GIPHY Capture. The GIF Maker (For recording my screen as gif)
-	mas install 1351639930 # Gifski, convert videos to gifs
-	mas install 414030210  # Limechat, IRC app.
-
-
     mas install 524983685 # Screen Utility (1.1)
     mas install 412347921 # OmmWriter (1.55)
     mas install 409183694 # Keynote (8.3)
     mas install 571213070 # DaVinci Resolve (15.2.1)
-    mas install 682658836 # GarageBand (10.3.1)
     mas install 490152466 # iBooks Author (2.6.1)
     mas install 402592703 # Time Out (2.5)
     mas install 422304217 # Day One Classic (1.10.6)
@@ -331,6 +310,18 @@ osascript -e 'tell application "System Preferences" to quit'
 ##################
 ### Finder, Dock, & Menu Items
 ##################
+
+# Finder: show status bar
+defaults write com.apple.finder ShowStatusBar -bool true
+
+# Finder: allow text selection in Quick Look
+defaults write com.apple.finder QLEnableTextSelection -bool true
+
+# Disable the sound effects on boot
+sudo nvram SystemAudioVolume=" "
+
+# Finder: show hidden files by default
+defaults write com.apple.finder AppleShowAllFiles -bool true
 
 # Finder: allow quitting via ⌘ + Q; doing so will also hide desktop icons
 defaults write com.apple.finder QuitMenuItem -bool true
@@ -442,7 +433,7 @@ defaults write com.apple.TextEdit RichText -int 0
 ###############################################################################
 
 # Hide Spotlight tray-icon (and subsequent helper)
-#sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
+sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
 # Disable Spotlight indexing for any volume that gets mounted and has not yet
 # been indexed before.
 # Use `sudo mdutil -i off "/Volumes/foo"` to stop indexing any volume.
@@ -503,7 +494,22 @@ defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 # Disable the all too sensitive backswipe on trackpads
 defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
 
+####
+# Others
+###
 
+# Increase sound quality for Bluetooth headphones/headsets
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+
+# Disable press-and-hold for keys in favor of key repeat
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+# Set a blazingly fast keyboard repeat rate
+defaults write NSGlobalDomain KeyRepeat -int 1
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+# Disable automatic capitalization as it’s annoying when typing code
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 #############################################
 ### Install dotfiles repo, run link script
 #############################################
@@ -518,6 +524,145 @@ defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
 # ./makesymlinks.sh
 # upgrade_oh_my_zsh
 
+
+###############################################################################
+# Safari & WebKit                                                             #
+###############################################################################
+
+# Privacy: don’t send search queries to Apple
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# Show the full URL in the address bar (note: this still hides the scheme)
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Prevent Safari from opening ‘safe’ files automatically after downloading
+defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+
+# Enable Safari’s debug menu
+defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
+
+# Enable the Develop menu and the Web Inspector in Safari
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+
+
+# Enable continuous spellchecking
+defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
+# Disable auto-correct
+defaults write com.apple.Safari WebAutomaticSpellingCorrectionEnabled -bool false
+
+# Warn about fraudulent websites
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# Enable “Do Not Track”
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+
+###############################################################################
+# Mail                                                                        #
+###############################################################################
+
+# Disable send and reply animations in Mail.app
+defaults write com.apple.mail DisableReplyAnimations -bool true
+defaults write com.apple.mail DisableSendAnimations -bool true
+
+# Copy email addresses as `foo@example.com` instead of `Foo Bar <foo@example.com>` in Mail.app
+defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
+
+
+# Display emails in threaded mode, sorted by date (oldest at the top)
+defaults write com.apple.mail DraftsViewerAttributes -dict-add "DisplayInThreadedMode" -string "yes"
+defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortedDescending" -string "yes"
+defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortOrder" -string "received-date"
+
+# Disable inline attachments (just show the icons)
+defaults write com.apple.mail DisableInlineAttachmentViewing -bool true
+
+####
+# node setup
+###
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+nvm install node
+nvm use node
+
+# npm dependencies that I'm not likely to live without
+npm install -g jsonlint
+npm install -g eslint
+npm install -g eslint_d
+npm install -g eslintme
+npm install -g yarn
+
+###############################################################################
+# Terminal & iTerm 2                                                          #
+###############################################################################
+
+# Only use UTF-8 in Terminal.app
+defaults write com.apple.terminal StringEncodings -array 4
+
+# Don’t display the annoying prompt when quitting iTerm
+defaults write com.googlecode.iterm2 PromptOnQuit -bool false
+
+###############################################################################
+# Time Machine                                                                #
+###############################################################################
+
+# Prevent Time Machine from prompting to use new hard drives as backup volume
+defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+
+# Disable local Time Machine backups
+hash tmutil &> /dev/null && sudo tmutil disablelocal
+
+
+###############################################################################
+# Activity Monitor                                                            #
+###############################################################################
+
+# Show the main window when launching Activity Monitor
+defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
+
+# Visualize CPU usage in the Activity Monitor Dock icon
+defaults write com.apple.ActivityMonitor IconType -int 5
+
+# Show all processes in Activity Monitor
+defaults write com.apple.ActivityMonitor ShowCategory -int 0
+
+# Sort Activity Monitor results by CPU usage
+defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
+defaults write com.apple.ActivityMonitor SortDirection -int 0
+
+###############################################################################
+# Address Book, Dashboard, iCal, TextEdit, and Disk Utility                   #
+###############################################################################
+
+# Enable the debug menu in Address Book
+defaults write com.apple.addressbook ABShowDebugMenu -bool true
+
+# Enable Dashboard dev mode (allows keeping widgets on the desktop)
+defaults write com.apple.dashboard devmode -bool true
+
+# Enable the debug menu in iCal (pre-10.8)
+defaults write com.apple.iCal IncludeDebugMenu -bool true
+
+# Use plain text mode for new TextEdit documents
+defaults write com.apple.TextEdit RichText -int 0
+# Open and save files as UTF-8 in TextEdit
+defaults write com.apple.TextEdit PlainTextEncoding -int 4
+defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
+
+# Enable the debug menu in Disk Utility
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
+defaults write com.apple.DiskUtility advanced-image-options -bool true
+
+# Auto-play videos when opened with QuickTime Player
+defaults write com.apple.QuickTimePlayerX MGPlayMovieOnOpen -bool true
+
+
+###############################################################################
+# Mac App Store                                                               #
+###############################################################################
+# Automatically download apps purchased on other Macs
+defaults write com.apple.SoftwareUpdate ConfigDataInstall -int 1
 
 echo ""
 cecho "Done!" $cyan
